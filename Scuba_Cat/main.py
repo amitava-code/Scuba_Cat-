@@ -1,6 +1,9 @@
 import cv2
+from src.detector import HandDetector
 
 cap = cv2.VideoCapture(0)
+
+detector =HandDetector()
 
 while True:
     success, img = cap.read()
@@ -8,6 +11,8 @@ while True:
         break
 
     img=cv2.flip(img,1)
+
+    results =detector.detect(img)
 
     cv2.imshow("Camera", img)
 
