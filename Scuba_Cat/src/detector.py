@@ -21,6 +21,21 @@ class HandDetector :
                     self.mp_hands.HAND_CONNECTIONS
                 )
         return results
+    
+
+    def find_positions(self, img , results):
+        lm_list= []
+
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                for id , lm in enumerate(hand_landmarks.landmark):
+                    h, w, c = img.shape
+                    cx, cy =int(lm.x * w), int(lm.y * h)
+                    lm_list.append([id, cx, cy])
+
+        return lm_list
+    
+  
 
       
 

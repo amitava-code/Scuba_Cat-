@@ -14,6 +14,11 @@ while True:
 
     results =detector.detect(img)
 
+    lm_list = detector.find_positions(img, results)
+
+    if lm_list:
+        print(lm_list[0])
+
     cv2.imshow("Camera", img)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
