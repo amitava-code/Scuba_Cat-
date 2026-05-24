@@ -7,6 +7,8 @@ while True:
     if not success:
         break
 
+    img=cv2.flip(img,1)
+
     cv2.imshow("Camera", img)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
