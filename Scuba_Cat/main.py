@@ -16,8 +16,16 @@ while True:
 
     lm_list = detector.find_positions(img, results)
 
-    if lm_list:
-        print(lm_list[0])
+
+    hand_detected = len(lm_list) > 0
+
+    if hand_detected:
+        cv2.putText(img, "HAND DETECTED", (50, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+
+
+    
 
     cv2.imshow("Camera", img)
 
