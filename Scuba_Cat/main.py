@@ -2,10 +2,19 @@ import cv2
 from src.detector import HandDetector
 from src.overlay_utils import Overlay
 
+mouse_x, mouse_y = 100,100
+
+def mouse_move(event, x,y, flags, param):
+    global mouse_x, mouse_y
+    if event == cv2.EVENT_MOUSEMOVE:
+        mouse_x, mouse_y= x,y
+
 cap = cv2.VideoCapture(0)
 
-detector =HandDetector()
+cv2.namedWindow("Camera")
+cv2.setMouseCallback("Camera", mouse_move)
 
+detector =HandDetector()
 overlay = Overlay("assets/blue.png")
 
 while True:
@@ -20,9 +29,10 @@ while True:
 
 
     hand_detected = len(lm_list) > 0
-
     overlay.set_visible(hand_detected)
-    img= overlay.apply(img)
+
+
+    img= overlay.apply(img, pos=(mouse_x - 100, mouse_y - 100))
 
     if hand_detected:
         cv2.putText(img, "HAND DETECTED", (50, 50),
