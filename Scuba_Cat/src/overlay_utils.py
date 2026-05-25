@@ -9,6 +9,12 @@ class Overlay:
     def set_visible(self, state: bool):
         self.visible = state
 
+    def is_visible(self)-> bool:
+        return self.visible
+    
+    def get_current_frame(self):
+        return self.frames[self.index]
+
     def next_frame(self):
         self.index = (self.index + 1) % len(self.frames)
 
