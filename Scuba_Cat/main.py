@@ -20,6 +20,16 @@ def load_gif_frames(path):
     cap.release()
     return frames
 
+def replace_white_with_black(frame, threshold=200):
+    result = frame.copy()
+    white_mask = (
+        (frame[:, :, 0] > threshold) &
+        (frame[:, :, 1] > threshold) &
+        (frame[:, :, 2] > threshold)
+    )
+    result[white_mask] = [0, 0, 0, 255]
+    return result
+
 
 frames_cat = load_gif_frames("assets/cat_animation.gif")
 frames_nick = load_gif_frames("assets/nick_animation.gif")
@@ -77,8 +87,9 @@ while True:
     cv2.imshow("Camera", img)
 
     if overlay_cat.is_visible():
-        current_frame = overlay_cat.get_current_frame()           # BGRA
-        gif_resized = cv2.resize(current_frame, GIF_SIZE)     # match your size
+        current_frame = overlay_cat.get_current_frame()
+        current_frame = replace_white_with_black(current_frame)           
+        gif_resized = cv2.resize(current_frame, GIF_SIZE)     
         gif_bgr = cv2.cvtColor(gif_resized, cv2.COLOR_BGRA2BGR)
  
         win_x = mouse_x - gif_w // 2

@@ -1,0 +1,146 @@
+
+# Commit 1 
+
+Open Camera
+     │
+     ▼
+ Read Frame ──── Failed? ──► Break
+     │
+     ▼
+Display Frame
+     │
+     ▼
+ 'q' pressed? ──► Yes ──► Break
+     │
+    No
+     │
+     └──────────────────────┘ (loop)
+     │
+     ▼
+Release Camera & Close Window
+
+
+
+# Commit 2 
+Mirror Effect
+
+
+
+
+
+
+# commit 4
+
+detect()
+
+Input Image (BGR)
+      │
+      ▼
+cv2.cvtColor(BGR → RGB)   ← MediaPipe needs RGB, OpenCV gives BGR
+      │
+      ▼
+self.hands.process(img)   ← runs hand detection
+      │
+      ▼
+results                   ← contains hand landmark data
+
+
+
+
+
+
+## FULL detect() FLOW 
+
+Input Image (BGR)
+      │
+      ▼
+Convert BGR → RGB
+      │
+      ▼
+Run Hand Detection (AI Model)
+      │
+      ▼
+Were any hands found?
+   │          │
+  YES         NO
+   │          │
+   ▼          └──→ skip drawing, return img
+Check each hand one by one
+   │
+   ▼
+Draw dots + lines on hand
+   │
+   ▼
+Return image with drawings
+
+
+
+
+
+
+
+
+
+HAND_LANDMARKS
+
+🔷 Line 1 — if results.multi_hand_landmarks:
+results.multi_hand_landmarks
+        │
+        ├── No hands found  →  None  →  condition is FALSE → skip
+        │
+        └── Hands found  →  [hand1, hand2]  →  condition is TRUE → enter
+
+🔷 Line 2 — for hand_landmarks in results.multi_hand_landmarks:
+results.multi_hand_landmarks = [hand1_data, hand2_data]
+                                     │             │
+                               1st loop       2nd loop
+                               (left hand)  (right hand)
+                    
+🔷 Line 3-7 — self.mp_draw.draw_landmarks(...)
+This function takes 3 arguments:
+
+self.mp_draw.draw_landmarks(
+    img,                          # Argument 1
+    hand_landmarks,               # Argument 2
+    self.mp_hands.HAND_CONNECTIONS # Argument 3
+)
+
+
+8   12  16  20      ← fingertips (dots)
+        │    │   │   │      ← bones (lines)
+        7   11  15  19
+        │    │   │   │
+        6   10  14  18
+        │    │   │   │
+   4    5    9  13  17
+   │    │
+   3    └── Palm
+   2
+   1
+   0  ← Wrist
+
+
+
+
+
+
+
+commit 7 :
+
+find_positions() called
+        │
+        ▼
+lm_list has data?
+        │
+   ┌────┴────┐
+  YES        NO
+   │          │
+   ▼          ▼
+hand_detected  hand_detected
+  = True        = False
+   │
+   ▼
+putText() draws
+"HAND DETECTED"
+in GREEN at (50,50)
+on the camera frame
