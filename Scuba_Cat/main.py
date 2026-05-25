@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pyautogui
 from src.detector import HandDetector
 from src.overlay_utils import Overlay
 
@@ -22,20 +23,15 @@ def load_gif_frames(path):
 
 frames = load_gif_frames("assets/cat_animation.gif")
 
-GIF_SIZE= (200,200)
+GIF_SIZE= (400,400)
 
-mouse_x, mouse_y = 100, 100
 
-def mouse_move(event, x, y, flags, param):
-    global mouse_x, mouse_y
-    if event == cv2.EVENT_MOUSEMOVE:
-        mouse_x, mouse_y = x, y
+
 
 
 cap = cv2.VideoCapture(0)
 
 cv2.namedWindow("Camera")
-cv2.setMouseCallback("Camera", mouse_move)
 
 GIF_WIN ="GifOverlay"
 cv2.namedWindow(GIF_WIN, cv2.WINDOW_NORMAL)
@@ -50,6 +46,8 @@ while True:
     success, img = cap.read()
     if not success:
         break
+
+    mouse_x, mouse_y= pyautogui.position()
 
     img = cv2.flip(img, 1)
 
