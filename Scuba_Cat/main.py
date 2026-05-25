@@ -21,26 +21,33 @@ def load_gif_frames(path):
     return frames
 
 
-frames = load_gif_frames("assets/cat_animation.gif")
+frames_cat = load_gif_frames("assets/cat_animation.gif")
+frames_nick = load_gif_frames("assets/nick_animation.gif")
 
-GIF_SIZE= (400,400)
+print(f"Cat frames: {len(frames_cat)}")
+print(f"Nick frames: {len(frames_nick)}")  
 
-
-
+GIF_SIZE= (500,400)
 
 
 cap = cv2.VideoCapture(0)
 
 cv2.namedWindow("Camera")
 
-GIF_WIN ="GifOverlay"
-cv2.namedWindow(GIF_WIN, cv2.WINDOW_NORMAL)
-cv2.setWindowProperty(GIF_WIN, cv2.WND_PROP_TOPMOST, 1)
+GIF_WIN_1 ="GifOverlay"
+cv2.namedWindow(GIF_WIN_1, cv2.WINDOW_NORMAL)
+cv2.setWindowProperty(GIF_WIN_1, cv2.WND_PROP_TOPMOST, 1)
+
+GIF_WIN_2="GifOverlay2"
+cv2.namedWindow(GIF_WIN_2, cv2.WINDOW_NORMAL)
+cv2.setWindowProperty(GIF_WIN_2, cv2.WND_PROP_TOPMOST, 1)
 
 gif_w , gif_h =GIF_SIZE
 
+overlay_cat = Overlay(frames_cat)
+overlay_nick = Overlay(frames_nick)
+
 detector = HandDetector()
-overlay = Overlay(frames)
 
 while True:
     success, img = cap.read()
@@ -55,8 +62,11 @@ while True:
     lm_list = detector.find_positions(img, results)
 
     hand_detected = len(lm_list) > 0
-    overlay.set_visible(hand_detected)
-    overlay.next_frame()
+    overlay_cat.set_visible(hand_detected)
+    overlay_nick.set_visible(hand_detected)
+    overlay_cat.next_frame()
+    overlay_nick.next_frame()
+ 
 
    
 
@@ -66,22 +76,38 @@ while True:
 
     cv2.imshow("Camera", img)
 
-    if overlay.is_visible():
-        current_frame = overlay.get_current_frame()           # BGRA
+    if overlay_cat.is_visible():
+        current_frame = overlay_cat.get_current_frame()           # BGRA
         gif_resized = cv2.resize(current_frame, GIF_SIZE)     # match your size
         gif_bgr = cv2.cvtColor(gif_resized, cv2.COLOR_BGRA2BGR)
  
         win_x = mouse_x - gif_w // 2
         win_y = mouse_y - gif_h // 2
  
-        cv2.resizeWindow(GIF_WIN, gif_w, gif_h)
-        cv2.moveWindow(GIF_WIN, win_x, win_y)
-        cv2.imshow(GIF_WIN, gif_bgr)
+        cv2.resizeWindow(GIF_WIN_1, gif_w, gif_h)
+        cv2.moveWindow(GIF_WIN_1, win_x, win_y)
+        cv2.imshow(GIF_WIN_1, gif_bgr)
     else:
         # Move off-screen and show blank to keep window alive
-        cv2.moveWindow(GIF_WIN, -9999, -9999)
-        blank = np.zeros((gif_h, gif_w, 3), dtype=np.uint8)
-        cv2.imshow(GIF_WIN, blank)
+        cv2.moveWindow(GIF_WIN_1, -9999, -9999)
+        cv2.imshow(GIF_WIN_1, np.zeros((gif_h, gif_w, 3), dtype=np.uint8))
+
+
+    if overlay_nick.is_visible():
+        current_frame = overlay_nick.get_current_frame()
+        gif_resized = cv2.resize(current_frame, GIF_SIZE)
+        gif_bgr = cv2.cvtColor(gif_resized, cv2.COLOR_BGRA2BGR)
+        win_x = mouse_x + gif_w // 2
+        win_y = mouse_y - gif_h // 2
+        cv2.resizeWindow(GIF_WIN_2, gif_w, gif_h)
+        cv2.moveWindow(GIF_WIN_2, win_x, win_y)
+        cv2.imshow(GIF_WIN_2, gif_bgr)
+    else:
+        cv2.moveWindow(GIF_WIN_2, -9999, -9999)
+        cv2.imshow(GIF_WIN_2, np.zeros((gif_h, gif_w, 3), dtype=np.uint8))
+
+    
+      
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
