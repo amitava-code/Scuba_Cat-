@@ -2,6 +2,28 @@ import cv2
 from src.detector import HandDetector
 from src.overlay_utils import Overlay
 
+def load_gif_frames(path):
+    cap= cv2.VideoCapture(path)
+    frames=[]
+
+    while True:
+        ret, frame= cap.read()
+        if not ret:
+            break
+
+        frame= cv2.cvtColor(frame, cv2.COLOR_BGR2BGRA)
+        frames.append(frame)
+
+    cap.release()
+    return frames
+
+
+frames = load_gif_frames("assets/cat_animation.gif")
+
+
+
+
+
 mouse_x, mouse_y = 100,100
 
 def mouse_move(event, x,y, flags, param):
@@ -15,7 +37,7 @@ cv2.namedWindow("Camera")
 cv2.setMouseCallback("Camera", mouse_move)
 
 detector =HandDetector()
-overlay = Overlay("assets/blue.png")
+overlay = Overlay(frames)
 
 while True:
     success, img = cap.read()
@@ -30,6 +52,8 @@ while True:
 
     hand_detected = len(lm_list) > 0
     overlay.set_visible(hand_detected)
+
+    overlay.next_frame()
 
 
     img= overlay.apply(img, pos=(mouse_x - 100, mouse_y - 100))
